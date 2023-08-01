@@ -45,14 +45,15 @@ void Can0_Init(void)
 /*********************************************************/
 Bool Can_Send(struct CAN_MSG msg)
 {
+    Bool Send_Result_Flag = TRUE;
     unsigned int send_buf,sp;
     if (msg.len > 8U)           //检查数据长度
     {
-        return FALSE;
+        Send_Result_Flag = FALSE;
     }
     if (CAN0CTL0_SYNCH == 0U)   //检查总线时钟
     {
-        return FALSE;
+        Send_Result_Flag = FALSE;
     }
     send_buf = 0U;
     do
@@ -75,7 +76,7 @@ Bool Can_Send(struct CAN_MSG msg)
     CAN0TXDLR = msg.len;     //写入数据长度
     CAN0TXTBPR = msg.prty;   //写入优先级
     CAN0TFLG = send_buf;     //清TXx标志(缓冲器准备发送)
-    return TRUE;
+    return Send_Result_Flag;
 }
 
 /*********************************************************/
@@ -84,13 +85,14 @@ Bool Can_Send(struct CAN_MSG msg)
 Bool Can_Receive(struct CAN_MSG *msg)
 {
     unsigned int sp2;
+    Bool flag = TRUE;
     if (!CAN0RFLG_RXF)             //检测接收标志
     {
-        return FALSE;
+        flag = FALSE;
     }
     if (CAN0RXIDR1_IDE)              //检测can协议是标准/扩展模式 0：标准  1:扩展
     {
-        return FALSE;
+        flag = FALSE;
     }
     msg->id = (unsigned int)(CAN0RXIDR0 << 3U) |       //读标识符
               (unsigned char)(CAN0RXIDR1 >> 5U);
@@ -107,5 +109,5 @@ Bool Can_Receive(struct CAN_MSG *msg)
         msg->data[sp2] = *((&CAN0RXDSR0) + sp2);
     }
     CAN0RFLG = 0x01U;                                  //清RXF标志(缓冲器准备接收)
-    return TRUE;
+    return flag;
 }

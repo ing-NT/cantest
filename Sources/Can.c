@@ -8,8 +8,9 @@
 /*********************************************************/
 void Can0_Init(void)
 {
-    if (CAN0CTL0_INITRQ == 0U) {        //查询是否进入初始化状态
-    CAN0CTL0_INITRQ = 1U;             //进入初始化状态
+    if (CAN0CTL0_INITRQ == 0U)          //查询是否进入初始化状态
+    {
+        CAN0CTL0_INITRQ = 1U;             //进入初始化状态
     }
     while (CAN0CTL1_INITAK == 0U);      //等待进入初始化状态
 
@@ -29,9 +30,11 @@ void Can0_Init(void)
 
     CAN0CTL1 = 0xc0U;                   //使能MSCAN模块,设置为一般运行
     CAN0CTL0 = 0x00U;                   //返回正常运行模式
-    while (CAN0CTL1_INITAK) {           //等待回到正常运行模模式
+    while (CAN0CTL1_INITAK)             //等待回到正常运行模模式
+    {
     }
-    while (CAN0CTL0_SYNCH == 0U) {      // 等待MSCAN与CAN总线时钟同步
+    while (CAN0CTL0_SYNCH == 0U)        // 等待MSCAN与CAN总线时钟同步
+    {
     }
     CAN0RFLG_RXF = 1U;                  //清空消息接受缓冲器    CAN4RFLG_RXF = 1
     CAN0RIER_RXFIE = 1U;                //使能接收中断
@@ -74,7 +77,6 @@ Bool Can_Send(struct CAN_MSG msg)
     CAN0TFLG = send_buf;     //清TXx标志(缓冲器准备发送)
     return TRUE;
 }
-
 
 /*********************************************************/
 /*                     CAN0接收                          */

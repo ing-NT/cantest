@@ -75,7 +75,7 @@ Bool Can_Send(struct CAN_MSG msg)
     }
     CAN0TXDLR = msg.len;     //写入数据长度
     CAN0TXTBPR = msg.prty;   //写入优先级
-    CAN0TFLG = send_buf;     //清TXx标志(缓冲器准备发送)
+    CAN0TFLG = send_buf;     //清除TXx标志(缓冲器准备发送)
     return Send_Result_Flag;
 }
 
@@ -108,6 +108,6 @@ Bool Can_Receive(struct CAN_MSG *msg)
     {
         msg->data[sp2] = *((&CAN0RXDSR0) + sp2);
     }
-    CAN0RFLG = 0x01U;                                  //清RXF标志(缓冲器准备接收)
+    CAN0RFLG = 0x01U;                                  //清除RXF标志(缓冲器准备接收)
     return flag;
 }

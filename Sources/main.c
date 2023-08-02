@@ -8,8 +8,10 @@
 #include "Rti.h"
 #include "InterruptReceive.h"
 
-#define ID          0x01U
-#define DATA_LEN_TX 8U
+//#define ID          0x01U
+//#define DATA_LEN_TX 8U
+static unsigned int ID = 0x01U;
+static unsigned int DATA_LEN_TX = 8U;
 static unsigned char send_data[8U] = {0x0aU, 0x01U, 0x0cU, 0x03U, 0x04U, 0x05U, 0x06U, 0x07U};
 
 void main(void)

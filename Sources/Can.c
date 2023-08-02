@@ -85,14 +85,14 @@ Bool Can_Send(struct CAN_MSG msg)
 Bool Can_Receive(struct CAN_MSG *msg)
 {
     unsigned int sp2;
-    Bool flag = TRUE;
+    //Bool flag = TRUE;
     if (!CAN0RFLG_RXF)             //检测接收标志
     {
-        flag = FALSE;
+        return FALSE;  //flag = FALSE;
     }
     if (CAN0RXIDR1_IDE)              //检测can协议是标准/扩展模式 0：标准  1:扩展
     {
-        flag = FALSE;
+        return FALSE;  //flag = FALSE;
     }
     msg->id = (unsigned int)(CAN0RXIDR0 << 3U) |       //读标识符
               (unsigned char)(CAN0RXIDR1 >> 5U);
@@ -109,5 +109,5 @@ Bool Can_Receive(struct CAN_MSG *msg)
         msg->data[sp2] = *((&CAN0RXDSR0) + sp2);
     }
     CAN0RFLG = 0x01U;                                  //清除RXF标志(缓冲器准备接收)
-    return flag;
+    return TRUE;  //return flag;
 }

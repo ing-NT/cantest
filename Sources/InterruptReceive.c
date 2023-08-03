@@ -3,8 +3,8 @@
 
 #include "hidef.h"
 #include "derivative.h"
-Bool Can0_Receive_successflag = FALSE;
-struct CAN_MSG msg_get;
+Bool Can0_Receive_Successflag = FALSE;
+struct Can_MsgType msg_get;
 /*
 #pragma CODE_SEG __NEAR_SEG NON_BANKED       //中断函数置于非分页区内
 void interrupt Interrupt_Receive(void)
@@ -13,11 +13,11 @@ void interrupt Interrupt_Receive(void)
     {
         if (msg_get->id == 0x01)
         {
-            Can0_Receive_successflag = TRUE;
+            Can0_Receive_Successflag = TRUE;
         }
         else
         {
-            Can0_Receive_successflag = FALSE;
+            Can0_Receive_Successflag = FALSE;
         }
     }
 }
@@ -32,11 +32,11 @@ void interrupt 7U Interrupt_Receive(void)
     {
         if (msg_get.id == 0x01U)
         {
-            Can0_Receive_successflag = TRUE;
+            Can0_Receive_Successflag = TRUE;
         }
         else
         {
-            Can0_Receive_successflag = FALSE;
+            Can0_Receive_Successflag = FALSE;
         }
     }
     CRGFLG_RTIF = 1U;                          // Clr RTI interrupt flag
@@ -46,5 +46,5 @@ void interrupt 7U Interrupt_Receive(void)
 
 Bool Receive_Interrupt_Result_Flag(void)
 {
-    return Can0_Receive_successflag;
+    return Can0_Receive_Successflag;
 }

@@ -4,7 +4,7 @@
 #include "derivative.h"
 
 extern void Can0_Init(void);
-struct CAN_MSG//发送报文的结构体
+struct Can_MsgType//报文的结构体
 {
     unsigned int id;         //帧ID
     unsigned char RTR;       //RTR:1为远程帧,0为数据帧
@@ -13,7 +13,7 @@ struct CAN_MSG//发送报文的结构体
     unsigned char prty;      //优先级
 };
 
-extern Bool Can_Send(struct CAN_MSG msg);
-extern Bool Can_Receive(struct CAN_MSG *msg);
+extern Bool Can_Send(struct Can_MsgType msg);
+extern Bool Can_Receive(struct Can_MsgType *msg);
 
 #endif

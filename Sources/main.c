@@ -10,6 +10,7 @@
 
 #define ID          0x01U
 #define DATA_LEN_TX 8U
+Bool Can0_Receive_Successflag1 = FALSE;
 
 void main(void)
 {
@@ -48,10 +49,11 @@ void main(void)
 //}
 	for ( ; ; )
 	{
-	  if (Receive_Interrupt_Result_Flag())
-	  {
-	    Can_Send(msg_for_send);
-	    Delay(8U);
-	  }
+		Can0_Receive_Successflag1 = Receive_Interrupt_Result_Flag();
+		if (Can0_Receive_Successflag1)
+	  	{
+	    	Can_Send(msg_for_send);
+	    	Delay(8U);
+	  	}
 	}
 }

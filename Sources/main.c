@@ -24,7 +24,7 @@ void main(void)
   	DDRC_DDRC4 = 1U;   /* ×¢ÒâË³Ðò²»ÄÜºÍCan0_Init()µ÷»» */
 	PORTC_PC4 = 1U;
   	Can0_Init();
-	//EnableInterrupts;
+	EnableInterrupts;
 
 	/* ÌîÐ´·¢ËÍ±¨ÎÄÄÚÈÝ */
   	msg_for_send.id = ID;
@@ -36,23 +36,22 @@ void main(void)
 	msg_for_send.RTR = 0U;
 	msg_for_send.prty = 0U;
 
+//	for ( ; ; )
+//	{
+//		if(Can_Receive(&msg_for_receive))
+//		{
+//			Delay(4U);
+//	    	Can_Send(msg_for_send);
+//	    	Delay(8U);       /* 2s */
+//	    }
+//	}
+//}
 	for ( ; ; )
 	{
-		if(Can_Receive(&msg_for_receive))
-		{
-			Delay(4U);
-	    	Can_Send(msg_for_send);
-	    	Delay(8U);       /* 2s */
-	    }
-	}
-}
-
-/*
-	for ( ; ; ) {
-	  if (Receive_Interrupt_Result_Flag()) {
+	  if (Receive_Interrupt_Result_Flag())
+	  {
 	    Can_Send(msg_for_send);
-	    Delay_1Ms(8U);
+	    Delay(8U);
 	  }
 	}
 }
-*/

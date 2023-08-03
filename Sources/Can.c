@@ -12,13 +12,15 @@ void Can0_Init(void)
     {
         CAN0CTL0_INITRQ = 1U;             /* 进入初始化状态 */
     }
-    while (CAN0CTL1_INITAK == 0U);      /* 等待进入初始化状态 */
+    while (CAN0CTL1_INITAK == 0U)      /* 等待进入初始化状态 */
+    {
+    }
 
     CAN0BTR0_SJW = 0U;                  /* 设置同步跳转宽度 */
     CAN0BTR0_BRP = 7U;                  /* 设置波特率,250Kbit/s */
-    CAN0BTR1 = 0x1cU;                   /* 设置时段1和时段2的Tq个数 ,总线频率为32MHz */
+    CAN0BTR1 = 0x1CU;                   /* 设置时段1和时段2的Tq个数 ,总线频率为32MHz */
 
-    //关闭滤波器
+    /* 关闭滤波器 */
     CAN0IDMR0 = 0xFFU;
     CAN0IDMR1 = 0xFFU;
     CAN0IDMR2 = 0xFFU;
@@ -28,7 +30,7 @@ void Can0_Init(void)
     CAN0IDMR6 = 0xFFU;
     CAN0IDMR7 = 0xFFU;
 
-    CAN0CTL1 = 0xc0U;                   /* 使能MSCAN模块,设置为一般运行 */
+    CAN0CTL1 = 0xC0U;                   /* 使能MSCAN模块,设置为一般运行 */
     CAN0CTL0 = 0x00U;                   /* 返回正常运行模式 */
     while (CAN0CTL1_INITAK)             /* 等待回到正常运行模模式 */
     {
@@ -43,7 +45,7 @@ void Can0_Init(void)
 /*********************************************************/
 /*                     CAN0发送                          */
 /*********************************************************/
-Bool Can_Send(struct CAN_MSG msg)
+Bool Can_Send(struct Can_MsgType msg)
 {
     Bool Send_Result_Flag = TRUE;
     unsigned int send_buf,sp;
@@ -67,7 +69,7 @@ Bool Can_Send(struct CAN_MSG msg)
     CAN0TXIDR1 = (unsigned char)(msg.id << 5U);
     if (msg.RTR)
     {                                             /* 判断RTR,1:远程帧 0：数据帧 */
-    CAN0TXIDR1 |= 0x10U;
+        CAN0TXIDR1 |= 0x10U;
     }
     for (sp = 0U; sp < msg.len; sp++)             /* 写入数据 */
     {
@@ -82,7 +84,7 @@ Bool Can_Send(struct CAN_MSG msg)
 /*********************************************************/
 /*                     CAN0接收                          */
 /*********************************************************/
-Bool Can_Receive(struct CAN_MSG *msg)
+Bool Can_Receive(struct Can_MsgType *msg)
 {
     unsigned int sp2;
     /* Bool flag = TRUE; */
@@ -90,12 +92,12 @@ Bool Can_Receive(struct CAN_MSG *msg)
     {
         return FALSE;  /* flag = FALSE; */
     }
-    if (CAN0RXIDR1_IDE)              /* 检测can协议是标准/扩展模式 0：标准  1:扩展 */
+    if (!CAN0RXIDR1_IDE)              /* 检测can协议是标准/扩展模式 0：标准  1:扩展 */
     {
-        return FALSE;  /* flag = FALSE; */
-    }
-    msg->id = (unsigned int)(CAN0RXIDR0 << 3U) |       /* 读标识符 */
+        /* return FALSE; */
+        msg->id = (unsigned int)(CAN0RXIDR0 << 3U) |       /* 读标识符 */
               (unsigned char)(CAN0RXIDR1 >> 5U);
+    }
     if (CAN0RXIDR1 & 0x10U)
     {
         msg->RTR = TRUE;

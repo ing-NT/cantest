@@ -24,7 +24,7 @@ void main(void)
   	DDRC_DDRC4 = 1U;   /* ×¢ÒâË³Ðò²»ÄÜºÍCan0_Init()µ÷»» */
 	PORTC_PC4 = 1U;
   	Can0_Init();
-	/* EnableInterrupts; */
+	//EnableInterrupts;
 
 	/* ÌîÐ´·¢ËÍ±¨ÎÄÄÚÈÝ */
   	msg_for_send.id = ID;
@@ -46,6 +46,7 @@ void main(void)
 	    }
 	}
 }
+
 /*
 	for ( ; ; ) {
 	  if (Receive_Interrupt_Result_Flag()) {

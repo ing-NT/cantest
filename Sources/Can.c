@@ -38,7 +38,7 @@ void Can0_Init(void)
     while (CAN0CTL0_SYNCH == 0U)        /* 等待MSCAN与CAN总线时钟同步 */
     {
     }
-    CAN0RFLG_RXF = 1U;                  /* 清空消息接受缓冲器    CAN4RFLG_RXF = 1 */
+    CAN0RFLG_RXF = 1U;                  /* 清空消息接受缓冲器 */
     CAN0RIER_RXFIE = 1U;                /* 使能接收中断 */
 }
 
@@ -47,37 +47,43 @@ void Can0_Init(void)
 /*********************************************************/
 Bool Can_Send(struct Can_MsgType msg)
 {
-    Bool Send_Result_Flag = TRUE;
+    Bool Send_Result_Flag = FALSE;
     unsigned int send_buf,sp;
-    if (msg.len > 8U)           /* 检查数据长度 */
+    if (msg.len > 8U || CAN0CTL0_SYNCH == 0U)  /* 检查数据长度 || 检查总线时钟 */
     {
         Send_Result_Flag = FALSE;
     }
-    if (CAN0CTL0_SYNCH == 0U)   /* 检查总线时钟 */
+    /*
+    if (CAN0CTL0_SYNCH == 0U)
+    //{
+    //    Send_Result_Flag = FALSE;
+    //}
+    */
+    else
     {
-        Send_Result_Flag = FALSE;
-    }
-    send_buf = 0U;
-    do
-    {                           /* 寻找空闲的缓冲器 */
-        CAN0TBSEL = CAN0TFLG;
-        send_buf = CAN0TBSEL;
-    }
-    while (!send_buf);
+        send_buf = 0U;
+        do
+        {                           /* 寻找空闲的缓冲器 */
+            CAN0TBSEL = CAN0TFLG;
+            send_buf = CAN0TBSEL;
+        }
+        while (!send_buf);
 
-    CAN0TXIDR0 = (unsigned char)(msg.id >> 3U);   /* 写入标识符 */
-    CAN0TXIDR1 = (unsigned char)(msg.id << 5U);
-    if (msg.RTR)
-    {                                             /* 判断RTR,1:远程帧 0：数据帧 */
-        CAN0TXIDR1 |= 0x10U;
+        CAN0TXIDR0 = (unsigned char)(msg.id >> 3U);   /* 写入标识符 */
+        CAN0TXIDR1 = (unsigned char)(msg.id << 5U);
+        if (msg.RTR)
+        {                                             /* 判断RTR,1:远程帧 0：数据帧 */
+            CAN0TXIDR1 |= 0x10U;
+        }
+        for (sp = 0U; sp < msg.len; sp++)             /* 写入数据 */
+        {
+            *((&CAN0TXDSR0) + sp) = msg.data[sp];
+        }
+        CAN0TXDLR = msg.len;     /* 写入数据长度 */
+        CAN0TXTBPR = msg.prty;   /* 写入优先级 */
+        CAN0TFLG = send_buf;     /* 清除TXx标志(缓冲器准备发送) */
+        Send_Result_Flag = TRUE;
     }
-    for (sp = 0U; sp < msg.len; sp++)             /* 写入数据 */
-    {
-        *((&CAN0TXDSR0) + sp) = msg.data[sp];
-    }
-    CAN0TXDLR = msg.len;     /* 写入数据长度 */
-    CAN0TXTBPR = msg.prty;   /* 写入优先级 */
-    CAN0TFLG = send_buf;     /* 清除TXx标志(缓冲器准备发送) */
     return Send_Result_Flag;
 }
 
@@ -87,30 +93,33 @@ Bool Can_Send(struct Can_MsgType msg)
 Bool Can_Receive(struct Can_MsgType *msg)
 {
     unsigned int sp2;
-    /* Bool flag = TRUE; */
+    Bool Receive_Result_Flag = FALSE;
     if (!CAN0RFLG_RXF)             /* 检测接收标志 */
     {
-        return FALSE;  /* flag = FALSE; */
-    }
-    if (!CAN0RXIDR1_IDE)              /* 检测can协议是标准/扩展模式 0：标准  1:扩展 */
-    {
-        /* return FALSE; */
-        msg->id = (unsigned int)(CAN0RXIDR0 << 3U) |       /* 读标识符 */
-              (unsigned char)(CAN0RXIDR1 >> 5U);
-    }
-    if (CAN0RXIDR1 & 0x10U)
-    {
-        msg->RTR = TRUE;
+        Receive_Result_Flag = FALSE;
     }
     else
     {
-        msg->RTR = FALSE;
+        if (!CAN0RXIDR1_IDE)              /* 检测can协议是标准/扩展模式 0：标准  1:扩展 */
+        {
+            msg->id = (unsigned int)(CAN0RXIDR0 << 3U) |       /* 读标识符 */
+                      (unsigned char)(CAN0RXIDR1 >> 5U);
+            if (CAN0RXIDR1 & 0x10U)
+            {
+                msg->RTR = TRUE;
+            }
+            else
+            {
+                msg->RTR = FALSE;
+            }
+        }
+        msg->len = CAN0RXDLR;                             /* 读取数据长度 */
+        for (sp2 = 0U; sp2 < msg->len; sp2++)             /* 读取数据 */
+        {
+            msg->data[sp2] = *((&CAN0RXDSR0) + sp2);
+        }
+        CAN0RFLG = 0x01U;     /* 清除RXF标志(缓冲器准备接收) */
+        Receive_Result_Flag = TRUE;
     }
-    msg->len = CAN0RXDLR;                             /* 读取数据长度 */
-    for (sp2 = 0U; sp2 < msg->len; sp2++)             /* 读取数据 */
-    {
-        msg->data[sp2] = *((&CAN0RXDSR0) + sp2);
-    }
-    CAN0RFLG = 0x01U;                                  /* 清除RXF标志(缓冲器准备接收) */
-    return TRUE;  /* return flag; */
+    return Receive_Result_Flag;
 }

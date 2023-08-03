@@ -71,7 +71,7 @@ Bool Can_Send(struct CAN_MSG msg)
     }
     for (sp = 0U; sp < msg.len; sp++)             //写入数据
     {
-    *((&CAN0TXDSR0) + sp) = msg.data[sp];
+        *((&CAN0TXDSR0) + sp) = msg.data[sp];
     }
     CAN0TXDLR = msg.len;     //写入数据长度
     CAN0TXTBPR = msg.prty;   //写入优先级
@@ -99,7 +99,8 @@ Bool Can_Receive(struct CAN_MSG *msg)
     if (CAN0RXIDR1 & 0x10U)
     {
         msg->RTR = TRUE;
-    } else
+    }
+    else
     {
         msg->RTR = FALSE;
     }

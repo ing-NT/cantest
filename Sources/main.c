@@ -8,27 +8,27 @@
 #include "Rti.h"
 #include "InterruptReceive.h"
 
-//#define ID          0x01U
-//#define DATA_LEN_TX 8U
-static unsigned int ID = 0x01U;
-static unsigned int DATA_LEN_TX = 8U;
+#define ID          0x01U
+#define DATA_LEN_TX 8U
+//static unsigned int ID = 0x01U;
+//static unsigned int DATA_LEN_TX = 8U;
 static unsigned char send_data[8U] = {0x0aU, 0x01U, 0x0cU, 0x03U, 0x04U, 0x05U, 0x06U, 0x07U};
 
 void main(void)
 {
 	unsigned int a;
-  	struct CAN_MSG msg_send,receive_msg;
- 	//³õÊ¼»¯
+  	struct CAN_MSG msg_send, receive_msg;
+ 	//Â³ÃµÃŠÂ¼Â»Â¯
   	DisableInterrupts;
   	Pll_Init();
   	Rti_Init();
   	Ect_Init();
-  	DDRC_DDRC4 = 1U;   //×¢ÒâË³Ğò²»ÄÜºÍCan0_Init()µ÷»»
+  	DDRC_DDRC4 = 1U;   //Ã—Â¢Ã’Ã¢Ã‹Â³ÃÃ²Â²Â»Ã„ÃœÂºÃCan0_Init()ÂµÃ·Â»Â»
 	PORTC_PC4 = 1U;
   	Can0_Init();
 	//EnableInterrupts;
 
-	//ÌîĞ´·¢ËÍ±¨ÎÄÄÚÈİ
+	//ÃŒÃ®ÃÂ´Â·Â¢Ã‹ÃÂ±Â¨ÃÃ„Ã„ÃšÃˆÃ
   	msg_send.id = ID;
   	for (a = 0U; a < DATA_LEN_TX; a++)
   	{
@@ -49,7 +49,7 @@ void main(void)
 	}
 }
 /*
-	for ( ; ; ) {                   //²âÊÔÖĞ¶Ï
+	for ( ; ; ) {                   //Â²Ã¢ÃŠÃ”Ã–ÃÂ¶Ã
 	  if (Receive_Interrupt_Result_Flag()) {
 	    Can_Send(msg_send);
 	    Delay_1Ms(8U);        //2s

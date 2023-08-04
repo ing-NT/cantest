@@ -3,12 +3,12 @@
 
 #include "hidef.h"
 #include "derivative.h"
+Bool Can0_ReceiveFlag = FALSE;
 
 /* 加入实时中断 */
 #pragma CODE_SEG __NEAR_SEG NON_BANKED       /* 中断函数置于非分页区内 */
 void interrupt 7U Interrupt_Receive(void)
 {
-    Bool Can0_ReceiveFlag = FALSE;
     struct Can_MsgType can_msg;
     if (Can_Receive(&can_msg))
     {
@@ -26,7 +26,7 @@ void interrupt 7U Interrupt_Receive(void)
 #pragma CODE_SEG DEFAULT                      /* 后续代码置于默认区域内 */
 
 
-Bool Receive_Interrupt_Result_Flag(void)
+Bool Receive_InterruptResultFlag(void)
 {
     return Can0_ReceiveFlag;
 }

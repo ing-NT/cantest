@@ -49,7 +49,7 @@ void main(void)
 //}
 	for ( ; ; )
 	{
-		Receive_Flag = Receive_Interrupt_Result_Flag();
+		Receive_Flag = Receive_InterruptResultFlag();
 		if (Receive_Flag)
 	  	{
 	    	Can_Send(can_msg);

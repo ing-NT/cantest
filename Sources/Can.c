@@ -47,16 +47,16 @@ void Can0_Init(void)
 /*********************************************************/
 Bool Can_Send(struct Can_MsgType can_msg)
 {
-    Bool Send_Result_Flag = FALSE;
+    Bool Send_ResultFlag = FALSE;
     unsigned int send_buf,sp;
     if (can_msg.len > 8U || CAN0CTL0_SYNCH == 0U)  /* 检查数据长度 || 检查总线时钟 */
     {
-        Send_Result_Flag = FALSE;
+        Send_ResultFlag = FALSE;
     }
     /*
     if (CAN0CTL0_SYNCH == 0U)
     //{
-    //    Send_Result_Flag = FALSE;
+    //    Send_ResultFlag = FALSE;
     //}
     */
     else
@@ -82,9 +82,9 @@ Bool Can_Send(struct Can_MsgType can_msg)
         CAN0TXDLR = can_msg.len;     /* 写入数据长度 */
         CAN0TXTBPR = can_msg.prty;   /* 写入优先级 */
         CAN0TFLG = send_buf;     /* 清除TXx标志(缓冲器准备发送) */
-        Send_Result_Flag = TRUE;
+        Send_ResultFlag = TRUE;
     }
-    return Send_Result_Flag;
+    return Send_ResultFlag;
 }
 
 /*********************************************************/
@@ -93,10 +93,10 @@ Bool Can_Send(struct Can_MsgType can_msg)
 Bool Can_Receive(struct Can_MsgType *can_msg)
 {
     unsigned int sp2;
-    Bool Receive_Result_Flag = FALSE;
+    Bool Receive_ResultFlag = FALSE;
     if (!CAN0RFLG_RXF)             /* 检测接收标志 */
     {
-        Receive_Result_Flag = FALSE;
+        Receive_ResultFlag = FALSE;
     }
     else
     {
@@ -119,7 +119,7 @@ Bool Can_Receive(struct Can_MsgType *can_msg)
             can_msg->data[sp2] = *((&CAN0RXDSR0) + sp2);
         }
         CAN0RFLG = 0x01U;     /* 清除RXF标志(缓冲器准备接收) */
-        Receive_Result_Flag = TRUE;
+        Receive_ResultFlag = TRUE;
     }
-    return Receive_Result_Flag;
+    return Receive_ResultFlag;
 }

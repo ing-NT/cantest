@@ -9,10 +9,10 @@
 void interrupt 7U Interrupt_Receive(void)
 {
     Bool Can0_ReceiveFlag = FALSE;
-    struct Can_MsgType Can_msg;
-    if (Can_Receive(&Can_msg))
+    struct Can_MsgType can_msg;
+    if (Can_Receive(&can_msg))
     {
-        if (Can_msg.id == 0x01U)
+        if (can_msg.id == 0x01U)
         {
             Can0_ReceiveFlag = TRUE;
         }

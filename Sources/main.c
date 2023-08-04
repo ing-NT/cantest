@@ -8,7 +8,7 @@
 #include "Rti.h"
 #include "InterruptReceive.h"
 
-#define ID          0x01U
+#define MSG_ID          0x01U
 #define DATA_LEN_TX 8U
 
 void main(void)
@@ -28,7 +28,7 @@ void main(void)
 	EnableInterrupts;
 
 	/* 发送报文 */
-  	can_msg.id = ID;
+  	can_msg.id = MSG_ID;
   	for (a = 0U; a < DATA_LEN_TX; a++)
   	{
   		can_msg.data[a] = Msg[a];

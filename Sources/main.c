@@ -10,49 +10,49 @@
 
 #define ID          0x01U
 #define DATA_LEN_TX 8U
-Bool Can0_Receive_Successflag1 = FALSE;
 
 void main(void)
 {
 	unsigned int a;
-	static unsigned char Send_Data[8U] = {0x0aU, 0x01U, 0x0cU, 0x03U, 0x04U, 0x05U, 0x06U, 0x07U};
-  	struct Can_MsgType msg_for_send, msg_for_receive;
- 	/* ³õÊ¼»¯ */
+	Bool Receive_Flag = FALSE;
+	static unsigned char Msg[8U] = {0x0aU, 0x01U, 0x0cU, 0x03U, 0x04U, 0x05U, 0x06U, 0x07U};
+  	struct Can_MsgType Can_msg;
+ 	/* 初始化 */
   	DisableInterrupts;
   	Pll_Init();
   	Rti_Init();
   	Ect_Init();
-  	DDRC_DDRC4 = 1U;   /* ×¢ÒâË³Ðò²»ÄÜºÍCan0_Init()µ÷»» */
+  	DDRC_DDRC4 = 1U;
 	PORTC_PC4 = 1U;
   	Can0_Init();
 	EnableInterrupts;
 
-	/* ÌîÐ´·¢ËÍ±¨ÎÄÄÚÈÝ */
-  	msg_for_send.id = ID;
+	/* 发送报文 */
+  	Can_msg.id = ID;
   	for (a = 0U; a < DATA_LEN_TX; a++)
   	{
-  		msg_for_send.data[a] = Send_Data[a];
+  		Can_msg.data[a] = Msg[a];
   	}
-  	msg_for_send.len = DATA_LEN_TX;
-	msg_for_send.RTR = 0U;
-	msg_for_send.prty = 0U;
+  	Can_msg.len = DATA_LEN_TX;
+	Can_msg.RTR = 0U;
+	Can_msg.prty = 0U;
 
 //	for ( ; ; )
 //	{
-//		if(Can_Receive(&msg_for_receive))
+//		if(Can_Receive(&msg))
 //		{
 //			Delay(4U);
-//	    	Can_Send(msg_for_send);
+//	    	Can_Send(Can_msg);
 //	    	Delay(8U);       /* 2s */
 //	    }
 //	}
 //}
 	for ( ; ; )
 	{
-		Can0_Receive_Successflag1 = Receive_Interrupt_Result_Flag();
-		if (Can0_Receive_Successflag1)
+		Receive_Flag = Receive_Interrupt_Result_Flag();
+		if (Receive_Flag)
 	  	{
-	    	Can_Send(msg_for_send);
+	    	Can_Send(Can_msg);
 	    	Delay(8U);
 	  	}
 	}

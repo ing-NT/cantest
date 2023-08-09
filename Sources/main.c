@@ -8,7 +8,7 @@
 #include "Rti.h"
 #include "InterruptReceive.h"
 
-#define MSG_ID          0x01U
+#define MSG_ID      0x01U
 #define DATA_LEN_TX 8U
 
 void main(void)
@@ -16,7 +16,7 @@ void main(void)
 	unsigned int a;
 	Bool Receive_Flag = FALSE;
 	static unsigned char Msg[8U] = {0x0aU, 0x01U, 0x0cU, 0x03U, 0x04U, 0x05U, 0x06U, 0x07U};
-  	struct Can_MsgType can_msg,msg;
+  	struct Can_MsgType can_msg;
  	/* 初始化 */
   	DisableInterrupts;
   	Pll_Init();
@@ -25,7 +25,7 @@ void main(void)
   	DDRC_DDRC4 = 1U;
 	PORTC_PC4 = 1U;
   	Can0_Init();
-	//EnableInterrupts;
+	EnableInterrupts;
 
 	/* 发送报文 */
   	can_msg.id = MSG_ID;

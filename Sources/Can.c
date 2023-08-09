@@ -48,7 +48,7 @@ void Can0_Init(void)
 Bool Can_Send(struct Can_MsgType can_msg)
 {
     Bool Send_ResultFlag = FALSE;
-    unsigned int send_buf,sp;
+    unsigned int send_buf, sp;
     if (can_msg.len > 8U || CAN0CTL0_SYNCH == 0U)  /* 检查数据长度 || 检查总线时钟 */
     {
         Send_ResultFlag = FALSE;

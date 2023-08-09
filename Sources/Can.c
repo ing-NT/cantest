@@ -69,8 +69,18 @@ Bool Can_Send(struct Can_MsgType can_msg)
         }
         while (!send_buf);
 
-        CAN0TXIDR0 = (unsigned char)(can_msg.id >> 3U);   /* 写入标识符 */
-        CAN0TXIDR1 = (unsigned char)(can_msg.id << 5U);
+        if (can_msg.IDE == 0U)              /* 检测can协议是标准/扩展模式 0：标准  1:扩展 */
+        {
+            CAN0TXIDR0 = (unsigned char)(can_msg.id >> 3U);   /* 写入标识符 */
+            CAN0TXIDR1 = (unsigned char)(can_msg.id << 5U);
+        }
+        else
+        {
+            CAN0TXIDR0 = (unsigned char)(can_msg.id >> 21U);
+            CAN0TXIDR1 = (unsigned char)(((can_msg.id >> 15U) & 0x07U) | ((can_msg.id) & 0xE0U) | 0x18U);
+            CAN0TXIDR2 = (unsigned char)(can_msg.id >> 7U);
+            CAN0TXIDR3 = (unsigned char)(can_msg.id << 1U);
+        }
         if (can_msg.RTR)
         {                                             /* 判断RTR,1:远程帧 0：数据帧 */
             CAN0TXIDR1 |= 0x10U;
@@ -103,15 +113,22 @@ Bool Can_Receive(struct Can_MsgType *can_msg)
         if (!CAN0RXIDR1_IDE)              /* 检测can协议是标准/扩展模式 0：标准  1:扩展 */
         {
             can_msg->id = (unsigned int)(CAN0RXIDR0 << 3U) |       /* 读标识符 */
-                      (unsigned char)(CAN0RXIDR1 >> 5U);
-            if (CAN0RXIDR1 & 0x10U)
-            {
-                can_msg->RTR = TRUE;
-            }
-            else
-            {
-                can_msg->RTR = FALSE;
-            }
+                          (unsigned char)(CAN0RXIDR1 >> 5U);
+        }
+        else
+        {
+            can_msg->id = (((unsigned long)CAN0RXIDR0) << 21U) | ((unsigned long)(CAN0RXIDR1 & 0xE0U) << 13U) |
+                          ((unsigned long)(CAN0RXIDR1 & 0x07U) << 15U) | (((unsigned long)CAN0RXIDR2) << 7U) |
+                          ((unsigned long)(CAN0RXIDR3 & 0xFEU) >> 1U);
+
+        }
+        if (CAN0RXIDR1 & 0x10U)
+        {
+            can_msg->RTR = TRUE;
+        }
+        else
+        {
+            can_msg->RTR = FALSE;
         }
         can_msg->len = CAN0RXDLR;                             /* 读取数据长度 */
         for (sp2 = 0U; sp2 < can_msg->len; sp2++)             /* 读取数据 */

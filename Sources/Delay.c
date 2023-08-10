@@ -3,10 +3,10 @@
 #include "hidef.h"
 #include "derivative.h"
 
-void Delay(unsigned int n)
+void Delay(unsigned int count)
 {
     unsigned int i;
-    for (i = 0U; i < n; i++)             /* 等待n个0.125s */
+    for (i = 0U; i < count; i++)             /* 等待n个0.125s */
     {
         ECT_TFLG1_C0F = 1U;              /* 清除标志位 */
         ECT_TC0 = ECT_TCNT + 31250U;     /* 设置输出比较时间0.125s */

@@ -1,5 +1,3 @@
-
-
 #include "Ect.h"
 
 #include "hidef.h"

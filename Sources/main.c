@@ -1,7 +1,7 @@
 #include <hidef.h>           /* common defines and macros */
 #include "derivative.h"      /* derivative-specific definitions */
 
-#include "Can.h"
+#include "Can0.h"
 #include "Pll.h"
 #include "Ect.h"
 #include "Delay.h"
@@ -14,9 +14,9 @@
 void main(void)
 {
 	unsigned int a;
-	Bool Receive_Flag = FALSE;
+	Bool main_ReceiveFlag = FALSE;
 	static unsigned char Msg[8U] = {0x0aU, 0x01U, 0x0cU, 0x03U, 0x04U, 0x05U, 0x06U, 0x07U};
-  	struct Can_MsgType can_msg;
+  	struct Can0_MsgType can0_msg, msg;
  	/* 初始化 */
   	DisableInterrupts;
   	Pll_Init();
@@ -25,25 +25,25 @@ void main(void)
   	DDRC_DDRC4 = 1U;
 	PORTC_PC4 = 1U;
   	Can0_Init();
-	EnableInterrupts;
+	//EnableInterrupts;
 
 	/* 发送报文 */
-  	can_msg.id = MSG_ID;
+  	can0_msg.id = MSG_ID;
   	for (a = 0U; a < DATA_LEN_TX; a++)
   	{
-  		can_msg.data[a] = Msg[a];
+  		can0_msg.data[a] = Msg[a];
   	}
-  	can_msg.len = DATA_LEN_TX;
-	can_msg.RTR = 0U;
-	can_msg.IDE = 0U;
-	can_msg.prty = 0U;
+  	can0_msg.len = DATA_LEN_TX;
+	can0_msg.RTR = 0U;
+	can0_msg.IDE = 0U;
+	can0_msg.prty = 0U;
 
 //	for ( ; ; )
 //	{
-//		if(Can_Receive(&msg))
+//		if(Can0_Receive(&msg))
 //		{
 //			Delay(4U);
-//	    	Can_Send(can_msg);
+//	    	Can0_Send(can0_msg);
 //	    	Delay(8U);       /* 2s */
 //	    }
 //	}
@@ -51,10 +51,10 @@ void main(void)
 
 	for ( ; ; )
 	{
-		Receive_Flag = Receive_InterruptResultFlag();
-		if (Receive_Flag)
+		main_ReceiveFlag = Interrupt_ReceiveResultFlag();
+		if (main_ReceiveFlag)
 	  	{
-	    	Can_Send(can_msg);
+	    	Can0_Send(can0_msg);
 	    	Delay(8U);
 	  	}
 	}

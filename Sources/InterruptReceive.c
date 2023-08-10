@@ -7,7 +7,7 @@ Bool SourcesInterrupt_ReceiveFlag = FALSE;
 
 /* 加入实时中断 */
 #pragma CODE_SEG __NEAR_SEG NON_BANKED       /* 中断函数置于非分页区内 */
-void interrupt 7U Interrupt_Receive(void)
+void interrupt VectorNumber_Vpit0 Interrupt_Receive(void)
 {
     struct Can0_MsgType can0_msg;
     if (Can0_Receive(&can0_msg))
@@ -21,9 +21,34 @@ void interrupt 7U Interrupt_Receive(void)
             SourcesInterrupt_ReceiveFlag = FALSE;
         }
     }
-    CRGFLG_RTIF = 1U;                          /* Clr RTI interrupt flag */
+    if (PITTF_PTF0 == 1U)
+    {
+        PITTF_PTF0 = 1U;
+    }
 }
 #pragma CODE_SEG DEFAULT                      /* 后续代码置于默认区域内 */
+
+
+
+/* 加入实时中断 */
+//#pragma CODE_SEG __NEAR_SEG NON_BANKED       /* 中断函数置于非分页区内 */
+//void interrupt 7U Interrupt_Receive(void)
+//{
+//    struct Can0_MsgType can0_msg;
+//    if (Can0_Receive(&can0_msg))
+//    {
+//        if (can0_msg.id == 0x01U)
+//        {
+//            SourcesInterrupt_ReceiveFlag = TRUE;
+//        }
+//        else
+//        {
+//            SourcesInterrupt_ReceiveFlag = FALSE;
+//        }
+//    }
+//    CRGFLG_RTIF = 1U;                          /* Clr RTI interrupt flag */
+//}
+//#pragma CODE_SEG DEFAULT                      /* 后续代码置于默认区域内 */
 
 
 Bool InterruptReceive_ResultFlag(void)

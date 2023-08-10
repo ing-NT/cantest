@@ -5,7 +5,8 @@
 #include "Pll.h"
 #include "Ect.h"
 #include "Delay.h"
-#include "Rti.h"
+//#include "Rti.h"
+#include "Pit.h"
 #include "InterruptReceive.h"
 
 #define MSG_ID      0x01U
@@ -16,12 +17,13 @@ void main(void)
 	unsigned int a;
 	Bool SourcesMain_ReceiveFlag = FALSE;
 	static unsigned char Msg[8U] = {0x0aU, 0x01U, 0x0cU, 0x03U, 0x04U, 0x05U, 0x06U, 0x07U};
-  	struct Can0_MsgType can0_msg;
+  	struct Can0_MsgType can0_msg, msg;
  	/* 初始化 */
   	DisableInterrupts;
   	Pll_Init();
-  	Rti_Init();
+  	//Rti_Init();
   	Ect_Init();
+  	Pit_Init();
   	DDRC_DDRC4 = 1U;
 	PORTC_PC4 = 1U;
   	Can0_Init();

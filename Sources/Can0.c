@@ -45,18 +45,18 @@ void Can0_Init(void)
 /*********************************************************/
 /*                     CAN0发送                          */
 /*********************************************************/
-Bool Can0_Send(struct Can0_MsgType can_msg)
+Bool Can0_Send(struct Can0_MsgType can0_msg)
 {
-    Bool Can0_Send_ResultFlag = FALSE;
+    Bool SourcesCan0_SendResultFlag = FALSE;
     unsigned int send_buf, sp;
-    if (can_msg.len > 8U || CAN0CTL0_SYNCH == 0U)  /* 检查数据长度 || 检查总线时钟 */
+    if (can0_msg.len > 8U || CAN0CTL0_SYNCH == 0U)  /* 检查数据长度 || 检查总线时钟 */
     {
-        Can0_Send_ResultFlag = FALSE;
+        SourcesCan0_SendResultFlag = FALSE;
     }
     /*
     if (CAN0CTL0_SYNCH == 0U)
     //{
-    //    Can0_Send_ResultFlag = FALSE;
+    //    SourcesCan0_SendResultFlag = FALSE;
     //}
     */
     else
@@ -69,73 +69,73 @@ Bool Can0_Send(struct Can0_MsgType can_msg)
         }
         while (!send_buf);
 
-        if (can_msg.IDE == 0U)              /* 检测can协议是标准/扩展模式 0：标准  1:扩展 */
+        if (can0_msg.IDE == 0U)              /* 检测can协议是标准/扩展模式 0：标准  1:扩展 */
         {
-            CAN0TXIDR0 = (unsigned char)(can_msg.id >> 3U);   /* 写入标识符 */
-            CAN0TXIDR1 = (unsigned char)(can_msg.id << 5U);
+            CAN0TXIDR0 = (unsigned char)(can0_msg.id >> 3U);   /* 写入标识符 */
+            CAN0TXIDR1 = (unsigned char)(can0_msg.id << 5U);
         }
         else
         {
-            CAN0TXIDR0 = (unsigned char)(can_msg.id >> 21U);
-            CAN0TXIDR1 = (unsigned char)(((can_msg.id >> 15U) & 0x07U) | ((can_msg.id) & 0xE0U) | 0x18U);
-            CAN0TXIDR2 = (unsigned char)(can_msg.id >> 7U);
-            CAN0TXIDR3 = (unsigned char)(can_msg.id << 1U);
+            CAN0TXIDR0 = (unsigned char)(can0_msg.id >> 21U);
+            CAN0TXIDR1 = (unsigned char)(((can0_msg.id >> 15U) & 0x07U) | ((can0_msg.id) & 0xE0U) | 0x18U);
+            CAN0TXIDR2 = (unsigned char)(can0_msg.id >> 7U);
+            CAN0TXIDR3 = (unsigned char)(can0_msg.id << 1U);
         }
-        if (can_msg.RTR)
+        if (can0_msg.RTR)
         {                                             /* 判断RTR,1:远程帧 0：数据帧 */
             CAN0TXIDR1 |= 0x10U;
         }
-        for (sp = 0U; sp < can_msg.len; sp++)             /* 写入数据 */
+        for (sp = 0U; sp < can0_msg.len; sp++)             /* 写入数据 */
         {
-            *((&CAN0TXDSR0) + sp) = can_msg.data[sp];
+            *((&CAN0TXDSR0) + sp) = can0_msg.data[sp];
         }
-        CAN0TXDLR = can_msg.len;     /* 写入数据长度 */
-        CAN0TXTBPR = can_msg.prty;   /* 写入优先级 */
+        CAN0TXDLR = can0_msg.len;     /* 写入数据长度 */
+        CAN0TXTBPR = can0_msg.prty;   /* 写入优先级 */
         CAN0TFLG = send_buf;     /* 清除TXx标志(缓冲器准备发送) */
-        Can0_Send_ResultFlag = TRUE;
+        SourcesCan0_SendResultFlag = TRUE;
     }
-    return Can0_Send_ResultFlag;
+    return SourcesCan0_SendResultFlag;
 }
 
 /*********************************************************/
 /*                     CAN0接收                          */
 /*********************************************************/
-Bool Can0_Receive(struct Can0_MsgType *can_msg)
+Bool Can0_Receive(struct Can0_MsgType *can0_msg)
 {
     unsigned int sp2;
-    Bool Can0_Receive_ResultFlag = FALSE;
+    Bool SourcesCan0_ReceiveResultFlag = FALSE;
     if (!CAN0RFLG_RXF)             /* 检测接收标志 */
     {
-        Can0_Receive_ResultFlag = FALSE;
+        SourcesCan0_ReceiveResultFlag = FALSE;
     }
     else
     {
         if (!CAN0RXIDR1_IDE)              /* 检测can协议是标准/扩展模式 0：标准  1:扩展 */
         {
-            can_msg->id = (unsigned int)(CAN0RXIDR0 << 3U) |       /* 读标识符 */
+            can0_msg->id = (unsigned int)(CAN0RXIDR0 << 3U) |       /* 读标识符 */
                           (unsigned char)(CAN0RXIDR1 >> 5U);
         }
         else
         {
-            can_msg->id = (((unsigned long)CAN0RXIDR0) << 21U) | ((unsigned long)(CAN0RXIDR1 & 0xE0U) << 13U) |
+            can0_msg->id = (((unsigned long)CAN0RXIDR0) << 21U) | ((unsigned long)(CAN0RXIDR1 & 0xE0U) << 13U) |
                           ((unsigned long)(CAN0RXIDR1 & 0x07U) << 15U) | (((unsigned long)CAN0RXIDR2) << 7U) |
                           ((unsigned long)(CAN0RXIDR3 & 0xFEU) >> 1U);
         }
         if (CAN0RXIDR1 & 0x10U)
         {
-            can_msg->RTR = TRUE;
+            can0_msg->RTR = TRUE;
         }
         else
         {
-            can_msg->RTR = FALSE;
+            can0_msg->RTR = FALSE;
         }
-        can_msg->len = CAN0RXDLR;                             /* 读取数据长度 */
-        for (sp2 = 0U; sp2 < can_msg->len; sp2++)             /* 读取数据 */
+        can0_msg->len = CAN0RXDLR;                             /* 读取数据长度 */
+        for (sp2 = 0U; sp2 < can0_msg->len; sp2++)             /* 读取数据 */
         {
-            can_msg->data[sp2] = *((&CAN0RXDSR0) + sp2);
+            can0_msg->data[sp2] = *((&CAN0RXDSR0) + sp2);
         }
         CAN0RFLG = 0x01U;     /* 清除RXF标志(缓冲器准备接收) */
-        Can0_Receive_ResultFlag = TRUE;
+        SourcesCan0_ReceiveResultFlag = TRUE;
     }
-    return Can0_Receive_ResultFlag;
+    return SourcesCan0_ReceiveResultFlag;
 }

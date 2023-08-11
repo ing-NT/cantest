@@ -16,7 +16,7 @@ void main(void)
 {
 	unsigned int a;
 	Bool SourcesMain_ReceiveFlag = FALSE;
-	static unsigned char Msg[8U] = {0x0aU, 0x01U, 0x0cU, 0x03U, 0x04U, 0x05U, 0x06U, 0x07U};
+	static unsigned char Msg[8U] = {0x0AU, 0x01U, 0x0CU, 0x03U, 0x04U, 0x05U, 0x06U, 0x07U};
   	struct Can0_MsgType can0_msg;
  	/* 初始化 */
   	DisableInterrupts;

@@ -1,5 +1,5 @@
-#ifndef SOURCES_INTERRUPT_RECEIVE_H_
-#define SOURCES_INTERRUPT_RECEIVE_H_
+#ifndef SOURCES_INTERRUPTRECEIVE_H_
+#define SOURCES_INTERRUPTRECEIVE_H_
 
 extern Bool InterruptReceive_ResultFlag(void);
 

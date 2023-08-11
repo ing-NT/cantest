@@ -3,22 +3,22 @@
 
 #include "hidef.h"
 #include "derivative.h"
-Bool SourcesInterrupt_ReceiveFlag = FALSE;
+Bool SOURCESINTERRUPT_RECEIVEFLAG = FALSE;
 
-/* 加入实时中断 */
+/* 加入PIT中断 */
 #pragma CODE_SEG __NEAR_SEG NON_BANKED       /* 中断函数置于非分页区内 */
 void interrupt VectorNumber_Vpit0 Interrupt_Receive(void)
 {
     struct Can0_MsgType can0_msg;
-    if (Can0_Receive(&can0_msg))
+    if (Can0_Receive(&can0_msg))  //
     {
         if (can0_msg.id == 0x01U)
         {
-            SourcesInterrupt_ReceiveFlag = TRUE;
+            SOURCESINTERRUPT_RECEIVEFLAG = TRUE;
         }
         else
         {
-            SourcesInterrupt_ReceiveFlag = FALSE;
+            SOURCESINTERRUPT_RECEIVEFLAG = FALSE;
         }
     }
     if (PITTF_PTF0 == 1U)
@@ -39,11 +39,11 @@ void interrupt VectorNumber_Vpit0 Interrupt_Receive(void)
 //    {
 //        if (can0_msg.id == 0x01U)
 //        {
-//            SourcesInterrupt_ReceiveFlag = TRUE;
+//            SOURCESINTERRUPT_RECEIVEFLAG = TRUE;
 //        }
 //        else
 //        {
-//            SourcesInterrupt_ReceiveFlag = FALSE;
+//            SOURCESINTERRUPT_RECEIVEFLAG = FALSE;
 //        }
 //    }
 //    CRGFLG_RTIF = 1U;                          /* Clr RTI interrupt flag */
@@ -53,5 +53,5 @@ void interrupt VectorNumber_Vpit0 Interrupt_Receive(void)
 
 Bool InterruptReceive_ResultFlag(void)
 {
-    return SourcesInterrupt_ReceiveFlag;
+    return SOURCESINTERRUPT_RECEIVEFLAG;
 }

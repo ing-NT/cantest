@@ -17,7 +17,7 @@ void main(void)
 	unsigned int a;
 	Bool SourcesMain_ReceiveFlag = FALSE;
 	static unsigned char Msg[8U] = {0x0aU, 0x01U, 0x0cU, 0x03U, 0x04U, 0x05U, 0x06U, 0x07U};
-  	struct Can0_MsgType can0_msg, msg;
+  	struct Can0_MsgType can0_msg;
  	/* 初始化 */
   	DisableInterrupts;
   	Pll_Init();
@@ -56,8 +56,9 @@ void main(void)
 		SourcesMain_ReceiveFlag = InterruptReceive_ResultFlag();
 		if (SourcesMain_ReceiveFlag)
 	  	{
-	    	Can0_Send(can0_msg);
 	    	Delay(8U);
+	    	Can0_Send(can0_msg);
+	    	SourcesMain_ReceiveFlag = FALSE;
 	  	}
 	}
 }
